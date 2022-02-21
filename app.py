@@ -6,6 +6,8 @@ def create_primes_table():
         cursor = connection.cursor()
 
         cursor.execute('CREATE TABLE IF NOT EXISTS primes (prime_number INTEGER PRIMARY KEY)')
+        val = 2
+        cursor.execute(f"INSERT INTO primes (prime_number) VALUES ({val})")
 
 
 def prime_generator(upper_bound, my_highest_prime):
@@ -42,9 +44,9 @@ def write_primes_to_db(n):
 
 
 def return_primes():
+    create_primes_table()
     with DatabaseConnection('primes.db') as connection:
         cursor = connection.cursor()
-        # TODO add exeption handeling in no DB
         cursor.execute('SELECT * FROM primes')
         primes = [{'prime': row[0]} for row in cursor.fetchall()]
         print(primes)
