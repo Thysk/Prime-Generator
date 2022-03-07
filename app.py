@@ -32,9 +32,9 @@ def prime_generator(upper_bound, my_highest_prime):
         if prime_array[i]:
             for x in range(i*i, upper_bound, i):
                 prime_array[x] = False
-    return [i for i in range(upper_bound) if prime_array[i]]
     end = time.perf_counter()
     print(f"To find primes up to {upper_bound} it took {end - start} Seconds")
+    return [i for i in range(upper_bound) if prime_array[i]]
 
 
 def write_primes_to_db(n):
