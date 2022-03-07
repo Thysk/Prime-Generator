@@ -15,21 +15,23 @@ def create_primes_table():
 
 
 def prime_generator(upper_bound, my_highest_prime):
+    start = time.perf_counter()
     primes_list = []
     with DatabaseConnection('primes.db') as connection:
         cursor = connection.cursor()
-
         cursor.execute('SELECT * FROM primes')
         primes = [{'prime': row[0]} for row in cursor.fetchall()]
         for p in primes:
-            primes_list.append(p['prime'])
 
+            primes_list.append(p['prime'])
     if int(my_highest_prime) < 2:
         low = 2
     else:
         low = my_highest_prime
 
+
     start = time.perf_counter()
+
     prime_array = [True] * upper_bound
     prime_array[0] = False
     prime_array[1] = False
@@ -38,16 +40,17 @@ def prime_generator(upper_bound, my_highest_prime):
         if prime_array[i]:
             for x in range(i*i, upper_bound, i):
                 prime_array[x] = False
-    return [i for i in range(upper_bound) if prime_array[i]]
     end = time.perf_counter()
     print(f"To find primes up to {upper_bound} it took {end - start} Seconds")
+    return [i for i in range(upper_bound) if prime_array[i]]
 
 
 def write_primes_to_db(n):
     with DatabaseConnection('primes.db') as connection:
         cursor = connection.cursor()
         val = n
-        cursor.execute(f"INSERT INTO primes (prime_number) VALUES ({val})")
+        cursor.execute(
+            f"INSERT OR REPLACE INTO primes (prime_number) VALUES ({val})")
 
 
 def return_primes():
@@ -61,7 +64,6 @@ def return_primes():
 
 def find_primes():
     upper_bound = int(input("Input an integer for upper bound: "))
-
     create_primes_table()
     with DatabaseConnection('primes.db') as connection:
         cursor = connection.cursor()
@@ -73,7 +75,6 @@ def find_primes():
             my_highest_prime = (my_highest_prime[0]) + 1
         else:
             pass
-
     write = prime_generator(upper_bound, my_highest_prime)
     for n in write:
         write_primes_to_db(n)
@@ -83,7 +84,6 @@ user_options = {
     'r': return_primes,
     'f': find_primes
 }
-
 USER_CHOICE = "What would you like to do? 'r' to return all primes found or 'f' to find more: "
 
 
