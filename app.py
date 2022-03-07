@@ -1,3 +1,5 @@
+import time
+from math import isqrt
 from database_connection import DatabaseConnection
 
 
@@ -34,7 +36,7 @@ def prime_generator(upper_bound, my_highest_prime):
     print(f"To find primes up to {upper_bound} it took {end - start} Seconds")
     return [i for i in range(upper_bound) if prime_array[i]]
 
- 
+
 def write_primes_to_db(n):
     with DatabaseConnection('primes.db') as connection:
         cursor = connection.cursor()
