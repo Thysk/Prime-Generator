@@ -1,3 +1,5 @@
+import time
+from math import isqrt
 from database_connection import DatabaseConnection
 
 
@@ -5,76 +7,79 @@ def create_primes_table():
     with DatabaseConnection('primes.db') as connection:
         cursor = connection.cursor()
 
-        cursor.execute('CREATE TABLE IF NOT EXISTS primes (prime_number INTEGER PRIMARY KEY)')
+        cursor.execute(
+            'CREATE TABLE IF NOT EXISTS primes (prime_number INTEGER PRIMARY KEY)')
+        val = 2
+        cursor.execute(
+            f"INSERT OR REPLACE INTO primes (prime_number) VALUES ({val})")
 
 
 def prime_generator(upper_bound, my_highest_prime):
     primes_list = []
     with DatabaseConnection('primes.db') as connection:
         cursor = connection.cursor()
-
         cursor.execute('SELECT * FROM primes')
-        primes = [{'prime': row[0]} for row in cursor.fetchall()]
+        primes = [row[0] for row in cursor.fetchall()]
         for p in primes:
+            primes_list.append(p)
 
-            primes_list.append(p['prime'])
+    start = time.perf_counter()
 
-    if int(my_highest_prime) < 2:
-        low = 2
-    else:
-        low = my_highest_prime
+    prime_array = [True] * upper_bound
+    prime_array[0] = False
+    prime_array[1] = False
 
-    for n in range(low, upper_bound):
-        for x in primes_list:
-            if n % x == 0:
-                break
-        else:
-            primes_list.append(n)
-            print(n)
-            yield n
+    for i in range(2, isqrt(upper_bound)):
+        if prime_array[i]:
+            for x in range(i*i, upper_bound, i):
+                prime_array[x] = False
+    return [i for i in range(upper_bound) if prime_array[i]]
 
 
 def write_primes_to_db(n):
     with DatabaseConnection('primes.db') as connection:
         cursor = connection.cursor()
-        val = n
-        cursor.execute(f"INSERT INTO primes (prime_number) VALUES ({val})")
+        for val in n:
+            cursor.execute(
+                f"INSERT OR REPLACE INTO primes (prime_number) VALUES ({val})")
 
 
 def return_primes():
+    create_primes_table()
     with DatabaseConnection('primes.db') as connection:
         cursor = connection.cursor()
-        # TODO add exeption handeling in no DB
         cursor.execute('SELECT * FROM primes')
-        primes = [{'prime': row[0]} for row in cursor.fetchall()]
+        primes = [row[0] for row in cursor.fetchall()]
         print(primes)
 
 
 def find_primes():
     upper_bound = int(input("Input an integer for upper bound: "))
-
     create_primes_table()
     with DatabaseConnection('primes.db') as connection:
         cursor = connection.cursor()
 
-        cursor.execute('SELECT prime_number FROM primes ORDER BY prime_number DESC')
+        cursor.execute(
+            'SELECT prime_number FROM primes ORDER BY prime_number DESC')
         my_highest_prime = cursor.fetchone() or 2
         if my_highest_prime != 2:
             my_highest_prime = (my_highest_prime[0]) + 1
         else:
             pass
-
+    start = time.perf_counter()
     write = prime_generator(upper_bound, my_highest_prime)
-    for n in write:
-        write_primes_to_db(n)
-
+    end = time.perf_counter()
+    print(f"To find primes up to {upper_bound} it took {end - start} Seconds")
+    start = time.perf_counter()
+    write_primes_to_db(write)
+    end = time.perf_counter()
+    print(f"To write it took {end - start} Seconds")
 
 
 user_options = {
     'r': return_primes,
     'f': find_primes
 }
-
 USER_CHOICE = "What would you like to do? 'r' to return all primes found or 'f' to find more: "
 
 
