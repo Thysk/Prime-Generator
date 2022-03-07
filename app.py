@@ -6,10 +6,10 @@ from database_connection import DatabaseConnection
 def create_primes_table():
     with DatabaseConnection('primes.db') as connection:
         cursor = connection.cursor()
-        cursor.execute('CREATE TABLE IF NOT EXISTS primes (prime_number INTEGER PRIMARY KEY)')
+        cursor.execute(
+            'CREATE TABLE IF NOT EXISTS primes (prime_number INTEGER PRIMARY KEY)')
         val = 2
         cursor.execute(f"INSERT INTO primes (prime_number) VALUES ({val})")
-
 
 
 def prime_generator(upper_bound, my_highest_prime):
@@ -31,7 +31,7 @@ def prime_generator(upper_bound, my_highest_prime):
     prime_array[0] = False
     prime_array[1] = False
 
-    for i in range(2, isqrt(upper_bound)):
+    for i in range(low, isqrt(upper_bound)):
         if prime_array[i]:
             for x in range(i*i, upper_bound, i):
                 prime_array[x] = False
