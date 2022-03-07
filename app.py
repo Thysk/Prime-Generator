@@ -54,18 +54,23 @@ def return_primes():
 
 
 def find_primes():
-    upper_bound = int(input("Input an integer for upper bound: "))
+    while True:
+        try:
+            upper_bound = int(input("Input an integer for upper bound: "))
+            break
+        except ValueError:
+            print("That is not a valid intiger.")
+            continue
+
     create_primes_table()
     with DatabaseConnection('primes.db') as connection:
         cursor = connection.cursor()
-
         cursor.execute(
             'SELECT prime_number FROM primes ORDER BY prime_number DESC')
         my_highest_prime = cursor.fetchone() or 2
         if my_highest_prime != 2:
             my_highest_prime = (my_highest_prime[0]) + 1
-        else:
-            pass
+
     start = time.perf_counter()
     write = prime_generator(upper_bound, my_highest_prime)
     end = time.perf_counter()
