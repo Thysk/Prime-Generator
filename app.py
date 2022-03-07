@@ -1,5 +1,3 @@
-import time
-from math import isqrt
 from database_connection import DatabaseConnection
 
 
@@ -9,6 +7,9 @@ def create_primes_table():
 
         cursor.execute(
             'CREATE TABLE IF NOT EXISTS primes (prime_number INTEGER PRIMARY KEY)')
+        val = 2
+        cursor.execute(
+            f"INSERT OR REPLACE INTO primes (prime_number) VALUES ({val})")
 
 
 def prime_generator(upper_bound, my_highest_prime):
@@ -18,15 +19,12 @@ def prime_generator(upper_bound, my_highest_prime):
         cursor.execute('SELECT * FROM primes')
         primes = [{'prime': row[0]} for row in cursor.fetchall()]
         for p in primes:
+
             primes_list.append(p['prime'])
     if int(my_highest_prime) < 2:
         low = 2
     else:
         low = my_highest_prime
-    start = time.perf_counter()
-    prime_array = [True] * upper_bound
-    prime_array[0] = False
-    prime_array[1] = False
 
     for i in range(2, isqrt(upper_bound)):
         if prime_array[i]:
@@ -36,7 +34,7 @@ def prime_generator(upper_bound, my_highest_prime):
     print(f"To find primes up to {upper_bound} it took {end - start} Seconds")
     return [i for i in range(upper_bound) if prime_array[i]]
 
-
+ 
 def write_primes_to_db(n):
     with DatabaseConnection('primes.db') as connection:
         cursor = connection.cursor()
@@ -45,9 +43,9 @@ def write_primes_to_db(n):
 
 
 def return_primes():
+    create_primes_table()
     with DatabaseConnection('primes.db') as connection:
         cursor = connection.cursor()
-        # TODO add exeption handeling in no DB
         cursor.execute('SELECT * FROM primes')
         primes = [{'prime': row[0]} for row in cursor.fetchall()]
         print(primes)
