@@ -29,6 +29,9 @@ def prime_generator(upper_bound, my_highest_prime):
     else:
         low = my_highest_prime
 
+
+    start = time.perf_counter()
+
     prime_array = [True] * upper_bound
     prime_array[0] = False
     prime_array[1] = False
