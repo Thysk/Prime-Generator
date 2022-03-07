@@ -20,15 +20,14 @@ def prime_generator(upper_bound, my_highest_prime):
     with DatabaseConnection('primes.db') as connection:
         cursor = connection.cursor()
         cursor.execute('SELECT * FROM primes')
-        primes = [{'prime': row[0]} for row in cursor.fetchall()]
+        primes = [row[0] for row in cursor.fetchall()]
         for p in primes:
 
-            primes_list.append(p['prime'])
+            primes_list.append(p)
     if int(my_highest_prime) < 2:
         low = 2
     else:
         low = my_highest_prime
-
 
     start = time.perf_counter()
 
@@ -58,7 +57,7 @@ def return_primes():
     with DatabaseConnection('primes.db') as connection:
         cursor = connection.cursor()
         cursor.execute('SELECT * FROM primes')
-        primes = [{'prime': row[0]} for row in cursor.fetchall()]
+        primes = [row[0] for row in cursor.fetchall()]
         print(primes)
 
 
