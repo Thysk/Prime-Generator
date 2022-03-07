@@ -16,13 +16,10 @@ def prime_generator(upper_bound, my_highest_prime):
     primes_list = []
     with DatabaseConnection('primes.db') as connection:
         cursor = connection.cursor()
-
         cursor.execute('SELECT * FROM primes')
         primes = [{'prime': row[0]} for row in cursor.fetchall()]
         for p in primes:
-
             primes_list.append(p['prime'])
-
     if int(my_highest_prime) < 2:
         low = 2
     else:
@@ -57,7 +54,6 @@ def return_primes():
 
 def find_primes():
     upper_bound = int(input("Input an integer for upper bound: "))
-
     create_primes_table()
     with DatabaseConnection('primes.db') as connection:
         cursor = connection.cursor()
@@ -69,7 +65,6 @@ def find_primes():
             my_highest_prime = (my_highest_prime[0]) + 1
         else:
             pass
-
     write = prime_generator(upper_bound, my_highest_prime)
     for n in write:
         write_primes_to_db(n)
@@ -79,7 +74,6 @@ user_options = {
     'r': return_primes,
     'f': find_primes
 }
-
 USER_CHOICE = "What would you like to do? 'r' to return all primes found or 'f' to find more: "
 
 
