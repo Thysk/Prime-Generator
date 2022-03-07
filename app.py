@@ -1,6 +1,5 @@
-import math
 import time
-
+from math import isqrt
 from database_connection import DatabaseConnection
 
 
@@ -25,13 +24,15 @@ def prime_generator(upper_bound, my_highest_prime):
     else:
         low = my_highest_prime
     start = time.perf_counter()
-    for n in range(low, upper_bound):
-        for x in primes_list:
-            if n % x == 0:
-                break
-        else:
-            primes_list.append(n)
-            yield n
+    prime_array = [True] * upper_bound
+    prime_array[0] = False
+    prime_array[1] = False
+
+    for i in range(2, isqrt(upper_bound)):
+        if prime_array[i]:
+            for x in range(i*i, upper_bound, i):
+                prime_array[x] = False
+    return [i for i in range(upper_bound) if prime_array[i]]
     end = time.perf_counter()
     print(f"To find primes up to {upper_bound} it took {end - start} Seconds")
 
