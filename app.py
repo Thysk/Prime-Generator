@@ -15,6 +15,7 @@ def create_primes_table():
 
 
 def prime_generator(upper_bound, my_highest_prime):
+    start = time.perf_counter()
     primes_list = []
     with DatabaseConnection('primes.db') as connection:
         cursor = connection.cursor()
@@ -27,6 +28,10 @@ def prime_generator(upper_bound, my_highest_prime):
         low = 2
     else:
         low = my_highest_prime
+
+    prime_array = [True] * upper_bound
+    prime_array[0] = False
+    prime_array[1] = False
 
     for i in range(2, isqrt(upper_bound)):
         if prime_array[i]:
@@ -41,7 +46,8 @@ def write_primes_to_db(n):
     with DatabaseConnection('primes.db') as connection:
         cursor = connection.cursor()
         val = n
-        cursor.execute(f"INSERT INTO primes (prime_number) VALUES ({val})")
+        cursor.execute(
+            f"INSERT OR REPLACE INTO primes (prime_number) VALUES ({val})")
 
 
 def return_primes():
