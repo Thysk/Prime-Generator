@@ -1,19 +1,24 @@
 import time
+
 from math import isqrt
 from database_connection import DatabaseConnection
 
 
+# Create the 'primes' database and populates it with 2 to prevent crashes
 def create_primes_table():
     with DatabaseConnection('primes.db') as connection:
         cursor = connection.cursor()
-
         cursor.execute(
-            'CREATE TABLE IF NOT EXISTS primes (prime_number INTEGER PRIMARY KEY)')
+            '''CREATE TABLE IF NOT EXISTS primes
+            (prime_number INTEGER PRIMARY KEY)''')
         val = 2
         cursor.execute(
             f"INSERT OR REPLACE INTO primes (prime_number) VALUES ({val})")
 
 
+# Searches for the primes.
+# Loads in previously found primes.
+# Uses Sieve of Eratosthenes to search for primes
 def prime_generator(upper_bound, my_highest_prime):
     primes_list = []
     with DatabaseConnection('primes.db') as connection:
@@ -22,8 +27,6 @@ def prime_generator(upper_bound, my_highest_prime):
         primes = [row[0] for row in cursor.fetchall()]
         for p in primes:
             primes_list.append(p)
-
-    start = time.perf_counter()
 
     prime_array = [True] * upper_bound
     prime_array[0] = False
@@ -36,6 +39,7 @@ def prime_generator(upper_bound, my_highest_prime):
     return [i for i in range(upper_bound) if prime_array[i]]
 
 
+# Writes the found primes to the DB
 def write_primes_to_db(n):
     with DatabaseConnection('primes.db') as connection:
         cursor = connection.cursor()
@@ -44,6 +48,7 @@ def write_primes_to_db(n):
                 f"INSERT OR REPLACE INTO primes (prime_number) VALUES ({val})")
 
 
+# Reads from the DB and returns all the primes
 def return_primes():
     create_primes_table()
     with DatabaseConnection('primes.db') as connection:
@@ -53,6 +58,7 @@ def return_primes():
         print(primes)
 
 
+# Initialising menu for finding the primes
 def find_primes():
     upper_bound = int(input("Input an integer for upper bound: "))
     create_primes_table()
@@ -76,15 +82,18 @@ def find_primes():
     print(f"To write it took {end - start} Seconds")
 
 
-user_options = {
-    'r': return_primes,
-    'f': find_primes
-}
-USER_CHOICE = "What would you like to do? 'r' to return all primes found or 'f' to find more: "
-
-
+# Main loop for program, generates the CLI menu to interact with code.
 def menu():
+    user_options = {
+        'r': return_primes,
+        'f': find_primes
+    }
+    USER_CHOICE = """What would you like to do?
+'r' : Returns all primes found
+or
+'f' : Find more primes: """
     user_input = input(USER_CHOICE)
+
     while True:
         if user_input in user_options:
             selected_function = user_options[user_input]
