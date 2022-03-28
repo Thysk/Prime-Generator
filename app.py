@@ -16,7 +16,7 @@ or
     while True:
         if user_input in user_options:
             if user_input == 'r':
-                # Print the returned primes, can be changed later to something else
+                # Print the returned primes, can be changed later
                 selected_function = user_options[user_input]
                 print(selected_function())
             else:
