@@ -1,8 +1,7 @@
 import prime_find
 
+
 # Main loop for program, generates the CLI menu to interact with code.
-
-
 def menu():
     user_options = {
         'r': prime_find.return_primes,
