@@ -9,8 +9,7 @@ def create_primes_table():
     with DatabaseConnection('primes.db') as connection:
         cursor = connection.cursor()
         cursor.execute(
-            '''CREATE TABLE IF NOT EXISTS primes
-            (prime_number INTEGER PRIMARY KEY)''')
+            'CREATE TABLE IF NOT EXISTS primes (prime_number INTEGER PRIMARY KEY)')
         val = 2
         cursor.execute(
             f"INSERT OR REPLACE INTO primes (prime_number) VALUES ({val})")
@@ -27,6 +26,8 @@ def prime_generator(upper_bound, my_highest_prime):
         primes = [row[0] for row in cursor.fetchall()]
         for p in primes:
             primes_list.append(p)
+
+    start = time.perf_counter()
 
     prime_array = [True] * upper_bound
     prime_array[0] = False
@@ -60,6 +61,7 @@ def return_primes():
 
 # Initialising menu for finding the primes
 def find_primes():
+
     while True:
         try:
             upper_bound = int(input("Input an integer for upper bound: "))
@@ -76,6 +78,8 @@ def find_primes():
         my_highest_prime = cursor.fetchone() or 2
         if my_highest_prime != 2:
             my_highest_prime = (my_highest_prime[0]) + 1
+        else:
+            pass
 
     start = time.perf_counter()
     write = prime_generator(upper_bound, my_highest_prime)
