@@ -5,42 +5,6 @@ from prime_find import prime_finder
 from prime_find import write_primes_to_db
 
 
-class TestPrimeFinder:
-
-    """Tests for the prime_finder function"""
-
-    def test_for_zero(self):
-        """Zero is not a prime and should not be in the prime list"""
-        primes = prime_finder(10)
-        assert 0 not in primes
-
-    def test_for_one(self):
-        """One is not a prime and should not be in the prime list"""
-        primes = prime_finder(10)
-        assert 1 not in primes
-
-    def test_for_primness_up_to_10(self):
-        """Generates primes up to 10 and checks if they are prime"""
-        primes = prime_finder(10)
-        for prime in primes:
-            for i in range(2, prime):
-                assert prime % i != 0
-
-    def test_for_primness_up_to_100(self):
-        """Generates primes up to 100 and checks if they are prime"""
-        primes = prime_finder(100)
-        for prime in primes:
-            for i in range(2, prime):
-                assert prime % i != 0
-
-    def test_for_primness_up_to_1000(self):
-        """Generates primes up to 1 thousand and checks if they are prime"""
-        primes = prime_finder(1000)
-        for prime in primes:
-            for i in range(2, prime):
-                assert prime % i != 0
-
-
 class TestDataBaseReadAndWrite:
     # Checks return_primes function
     def test_returns_list(self):
@@ -93,3 +57,39 @@ class TestDataBaseReadAndWrite:
         assert returned_value == [2, 3, 5, 7, 11, 13, 17, 19, 23,
                                   29, 31, 37, 41, 43, 47, 53, 59,
                                   61, 67, 71, 73, 79, 83, 89, 97]
+
+
+class TestPrimeFinder:
+
+    """Tests for the prime_finder function"""
+
+    def test_for_zero(self):
+        """Zero is not a prime and should not be in the prime list"""
+        primes = prime_finder(10)
+        assert 0 not in primes
+
+    def test_for_one(self):
+        """One is not a prime and should not be in the prime list"""
+        primes = prime_finder(10)
+        assert 1 not in primes
+
+    def test_for_primness_up_to_10(self):
+        """Generates primes up to 10 and checks if they are prime"""
+        primes = prime_finder(10)
+        for prime in primes:
+            for i in range(2, prime):
+                assert prime % i != 0
+
+    def test_for_primness_up_to_100(self):
+        """Generates primes up to 100 and checks if they are prime"""
+        primes = prime_finder(100)
+        for prime in primes:
+            for i in range(2, prime):
+                assert prime % i != 0
+
+    def test_for_primness_up_to_1000(self):
+        """Generates primes up to 1 thousand and checks if they are prime"""
+        primes = prime_finder(1000)
+        for prime in primes:
+            for i in range(2, prime):
+                assert prime % i != 0
