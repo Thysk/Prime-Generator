@@ -7,6 +7,8 @@ from prime_find import write_primes_to_db
 
 class TestPrimeFinder:
 
+    """Tests for the prime_finder function"""
+
     def test_for_zero(self):
         """Zero is not a prime and should not be in the prime list"""
         primes = prime_finder(10)
@@ -39,10 +41,8 @@ class TestPrimeFinder:
                 assert prime % i != 0
 
 
-# Test suite for return_primes
-
-
 class TestDataBaseReadAndWrite:
+    # Checks return_primes function
     def test_returns_list(self):
         """removes any db before testing,
         then in reading db creates a new DB with default
@@ -60,6 +60,7 @@ class TestDataBaseReadAndWrite:
             os.remove('primes.db')
         returned_value = return_primes()
         assert returned_value == [2]
+    # After verifying the reading of the DB, test writing to DB
 
     def test_returns_correct_values_upto_10(self):
         """removes any db before testing,

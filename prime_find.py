@@ -51,19 +51,20 @@ def return_primes() -> list:
 
 
 # Initialising menu for finding the primes
-def find_primes_workflow() -> None:
+def find_primes_workflow(upper_bound: int = None,) -> None:
     # gets an integer from user, if invalid input loops input
-    while True:
-        try:
-            upper_bound = int(
-                input("Input an integer for upper bound 3 or above: "))
-            if upper_bound <= 2:
-                print("Please make the value above 2")
+    if not upper_bound:
+        while True:
+            try:
+                upper_bound = int(
+                    input("Input an integer for upper bound 3 or above: "))
+                if upper_bound <= 2:
+                    print("Please make the value above 2")
+                    continue
+                break
+            except ValueError:
+                print("That is not a valid intiger.")
                 continue
-            break
-        except ValueError:
-            print("That is not a valid intiger.")
-            continue
 
     # Creates db if needed
     create_primes_table()
@@ -77,8 +78,6 @@ def find_primes_workflow() -> None:
 
     # write the primes to a database with a timer wrapper
     start = time.perf_counter()
-    with DatabaseConnection('primes.db') as connection:
-        cursor = connection.cursor()
     write_primes_to_db(write)
     end = time.perf_counter()
     print(f"To write it took {end - start} Seconds")
