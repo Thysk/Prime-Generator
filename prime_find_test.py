@@ -5,7 +5,63 @@ from prime_find import prime_finder
 from prime_find import write_primes_to_db
 
 
+class TestDataBaseReadAndWrite:
+    # Checks return_primes function
+    def test_returns_list(self):
+        """removes any db before testing,
+        then in reading db creates a new DB with default
+        checks default creation is a list"""
+        if os.path.isfile('primes.db'):
+            os.remove('primes.db')
+        returned_value = return_primes()
+        assert isinstance(returned_value, list)
+
+    def test_returns_default_values(self):
+        """removes any db before testing,
+        then in reading db creates a new DB with default
+        checks default creation is initialised with value [2]"""
+        if os.path.isfile('primes.db'):
+            os.remove('primes.db')
+        returned_value = return_primes()
+        assert returned_value == [2]
+    # After verifying the reading of the DB, test writing to DB
+
+    def test_returns_correct_values_upto_10(self):
+        """removes any db before testing,
+        creates a new DB
+        finds primes up to 10
+        writes the primes
+        reads the primes and checks against known list"""
+        if os.path.isfile('primes.db'):
+            os.remove('primes.db')
+        create_primes_table()
+        primes = prime_finder(10)
+        print(f"primes is {primes}")
+        write_primes_to_db(primes)
+        returned_value = return_primes()
+        assert returned_value == [2, 3, 5, 7]
+
+    def test_returns_correct_values_upto_100(self):
+        """removes any db before testing,
+        creates a new DB
+        finds primes up to 100
+        writes the primes
+        reads the primes and checks against known list"""
+        if os.path.isfile('primes.db'):
+            os.remove('primes.db')
+        create_primes_table()
+        primes = prime_finder(100)
+        print(f"primes is {primes}")
+        write_primes_to_db(primes)
+        returned_value = return_primes()
+        assert returned_value == [2, 3, 5, 7, 11, 13, 17, 19, 23,
+                                  29, 31, 37, 41, 43, 47, 53, 59,
+                                  61, 67, 71, 73, 79, 83, 89, 97]
+
+
 class TestPrimeFinder:
+
+    """Tests for the prime_finder function"""
 
     def test_for_zero(self):
         """Zero is not a prime and should not be in the prime list"""
