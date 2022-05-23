@@ -3,11 +3,7 @@
 
 name: App Testing
 
-on:
-  push:
-    branches: [ dev ]
-  pull_request:
-    branches: [ dev ]
+on: [push]
 
 permissions:
   contents: read
