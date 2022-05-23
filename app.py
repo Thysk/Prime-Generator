@@ -28,6 +28,7 @@ def app_menu(user_input: str = None, upper_bound: int = None):
     else:
         user_input = input(USER_CHOICE)
         # Human menu in a loop
+
         menu = True
         while menu:
             if user_input in user_options:
@@ -38,6 +39,7 @@ def app_menu(user_input: str = None, upper_bound: int = None):
                 elif user_input == 'f':
                     selected_function = user_options[user_input]
                     selected_function()
+
                 elif user_input == 'q':
                     break
             else:
