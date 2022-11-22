@@ -4,7 +4,6 @@ import sqlite3
 class DatabaseConnection:
     """ Establishes the self.connection for future use of the database.
         Prodive the host, a string for the database location.
-
     """
 
     def __init__(self, host: str):
@@ -13,7 +12,7 @@ class DatabaseConnection:
         self.host = host
 
     def __enter__(self):
-        """Establises and returns the connection \
+        """ Establises and returns the connection \
         to the database to be used by functions.
         """
         self.connection = sqlite3.connect(self.host)

@@ -10,7 +10,7 @@ from database_connection import DatabaseConnection
 
 
 def create_primes_table():
-    """Creates the 'primes.db' database \
+    """ Creates the 'primes.db' database \
         it then  populates the database with the value of 2 \
         the first prime number, which helps prevent crashes \
         from later functions
