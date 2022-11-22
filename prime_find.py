@@ -3,7 +3,6 @@ import time
 from math import isqrt
 from database_connection import DatabaseConnection
 
-# TODO add comments to the functions
 # TODO Create Sphinx documents
 # TODO create a tutorial
 # TODO setup instructions - plan the cynical!
@@ -50,7 +49,7 @@ def prime_finder(upper_bound: int) -> list:
 
 
 def write_primes_to_db(n: list) -> None:
-    """ Writes the outputs from the input list to the DB
+    """ Writes the input list to the DB
         In this case takes a list and writes each item to the \
         column prime_number in the table primes, \
         in the database primes.db.
@@ -86,7 +85,7 @@ def find_primes_workflow(upper_bound: int = None,) -> None:
         This can function can be called directly for automated workflows,
         or this function will be called from the App Menu found in app.py.
 
-        This function works in several stage: \
+        This function works in several stage:
             1. Established an upper_bound for the array, \
             either through user input or passed argumennts
             2. Creates the database if required

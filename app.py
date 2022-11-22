@@ -4,10 +4,13 @@ import prime_find
 # Main loop for program, generates the CLI menu to interact with code.
 def app_menu(user_input: str = None, upper_bound: int = None):
     """ App CLI with options for the features of the app:
+
         'r' : Returns all primes found
-        or
+
         'f' : Find more primes
+
         'q' : Quit from the menu
+
     """
     user_options = {
         'r': prime_find.return_primes,
@@ -17,7 +20,6 @@ def app_menu(user_input: str = None, upper_bound: int = None):
     USER_CHOICE = """
         What would you like to do?
         'r' : Returns all primes found
-        or
         'f' : Find more primes
         'q' : Quit from the menu
         """
