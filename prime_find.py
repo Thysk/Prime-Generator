@@ -3,9 +3,18 @@ import time
 from math import isqrt
 from database_connection import DatabaseConnection
 
+# TODO add comments to the functions
+# TODO Create Sphinx documents
+# TODO create a tutorial
+# TODO setup instructions - plan the cynical!
 
-# Create the 'primes' database and populates it with 2 to prevent crashes
+
 def create_primes_table():
+    """Creates the 'primes.db' database \
+        it then  populates the database with the value of 2 \
+        the first prime number, which helps prevent crashes \
+        from later functions
+    """
     with DatabaseConnection('primes.db') as connection:
         cursor = connection.cursor()
         cursor.execute(
@@ -16,10 +25,19 @@ def create_primes_table():
             f"INSERT OR REPLACE INTO primes (prime_number) VALUES ({val})")
 
 
-# Searches for the primes.
-# Loads in previously found primes.
-# Uses Sieve of Eratosthenes to search for primes
 def prime_finder(upper_bound: int) -> list:
+    """ Searches for the primes between 2 and the defined upper_bound.
+        It does this by initialising an array, and using the \
+        Sieve of Eratosthenes method quickly finds more primes.
+
+    Args:
+        upper_bound (int): An integer defining the upper bounds of the array \
+            in which primes are searched for within
+
+    Returns:
+        list: A List of prime numbers found between the lower_bound=2 \
+        and your upper_bound
+    """
     prime_array = [True] * upper_bound
     prime_array[0] = False
     prime_array[1] = False
@@ -31,8 +49,15 @@ def prime_finder(upper_bound: int) -> list:
     return [i for i in range(upper_bound) if prime_array[i]]
 
 
-# Writes the found primes to the DB
 def write_primes_to_db(n: list) -> None:
+    """ Writes the outputs from the input list to the DB
+        In this case takes a list and writes each item to the \
+        column prime_number in the table primes, \
+        in the database primes.db.
+
+    Args:
+        n (list): A list of inputs to be written to a database
+    """
     with DatabaseConnection('primes.db') as connection:
         cursor = connection.cursor()
         for val in n:
@@ -40,8 +65,13 @@ def write_primes_to_db(n: list) -> None:
                 f"INSERT OR REPLACE INTO primes (prime_number) VALUES ({val})")
 
 
-# Reads from the DB and returns all the primes
 def return_primes() -> list:
+    """ Reads from the DB and returns all the primes
+
+    Returns:
+        list: Returns a list of all the columns \
+        found within the table primes, within the database primes.db
+    """
     create_primes_table()
     with DatabaseConnection('primes.db') as connection:
         cursor = connection.cursor()
@@ -52,7 +82,23 @@ def return_primes() -> list:
 
 # Initialising menu for finding the primes
 def find_primes_workflow(upper_bound: int = None,) -> None:
-    # gets an integer from user, if invalid input loops input
+    """ The main workflow function for the prime number searching functionality.
+        This can function can be called directly for automated workflows,
+        or this function will be called from the App Menu found in app.py.
+
+        This function works in several stage: \
+            1. Established an upper_bound for the array, \
+            either through user input or passed argumennts
+            2. Creates the database if required
+            3. Finds all the primes up to the upper_bound, \
+            while timing the function
+            4. writes the found primes to the database
+
+    Args:
+        upper_bound (int, optional): This intiger can be provided by calling \
+        this function directly, or from inputs. Defaults to None.
+    """
+
     if not upper_bound:
         while True:
             try:
