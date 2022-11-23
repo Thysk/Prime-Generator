@@ -3,9 +3,7 @@ import time
 from math import isqrt
 from database_connection import DatabaseConnection
 
-# TODO Create Sphinx documents
-# TODO create a tutorial
-# TODO setup instructions - plan the cynical!
+# TODO: Segment array when large to improve performance
 
 
 def create_primes_table():
