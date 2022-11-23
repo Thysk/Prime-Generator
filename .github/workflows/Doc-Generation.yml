@@ -26,7 +26,7 @@ jobs:
         python -m pip install -U sphinx
         python -m pip install sphinx-rtd-theme
 
-    - name: make the sphinx docs
+    - name: Make the sphinx docs
       run: |
         make -C docs clean
         make -C docs html
