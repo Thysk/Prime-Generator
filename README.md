@@ -15,13 +15,3 @@ It then writes all the prime numbers to a sqllite3 database.
 
 'q' quits the program cleanly
 
-### TODO:
-
-   - Segment large arrays to improve memory useage
-  
-   - Add option to clear database in CLI
-  
-   - Option to return primes in a defined range
-  
-  
-  
