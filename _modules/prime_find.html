@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>prime_find &mdash; Prime Finder  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Prime Finder
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">Prime_Generator</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Prime Finder</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">prime_find</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for prime_find</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">isqrt</span>
+<span class="kn">from</span> <span class="nn">database_connection</span> <span class="kn">import</span> <span class="n">DatabaseConnection</span>
+
+<span class="c1"># TODO: Segment array when large to improve performance</span>
+
+
+<div class="viewcode-block" id="create_primes_table"><a class="viewcode-back" href="../prime_find.html#prime_find.create_primes_table">[docs]</a><span class="k">def</span> <span class="nf">create_primes_table</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Creates the &#39;primes.db&#39; database \</span>
+<span class="sd">        it then  populates the database with the value of 2 \</span>
+<span class="sd">        the first prime number, which helps prevent crashes \</span>
+<span class="sd">        from later functions</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">DatabaseConnection</span><span class="p">(</span><span class="s1">&#39;primes.db&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">connection</span><span class="p">:</span>
+        <span class="n">cursor</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+<span class="w">            </span><span class="sd">&#39;&#39;&#39;CREATE TABLE IF NOT EXISTS primes</span>
+<span class="sd">            (prime_number INTEGER PRIMARY KEY)&#39;&#39;&#39;</span><span class="p">)</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;INSERT OR REPLACE INTO primes (prime_number) VALUES (</span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="prime_finder"><a class="viewcode-back" href="../prime_find.html#prime_find.prime_finder">[docs]</a><span class="k">def</span> <span class="nf">prime_finder</span><span class="p">(</span><span class="n">upper_bound</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Searches for the primes between 2 and the defined upper_bound.</span>
+<span class="sd">        It does this by initialising an array, and using the \</span>
+<span class="sd">        Sieve of Eratosthenes method quickly finds more primes.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        upper_bound (int): An integer defining the upper bounds of the array \</span>
+<span class="sd">            in which primes are searched for within</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: A List of prime numbers found between the lower_bound=2 \</span>
+<span class="sd">        and your upper_bound</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">prime_array</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">]</span> <span class="o">*</span> <span class="n">upper_bound</span>
+    <span class="n">prime_array</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">prime_array</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="o">+</span><span class="n">isqrt</span><span class="p">(</span><span class="n">upper_bound</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">prime_array</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">i</span><span class="p">,</span> <span class="n">upper_bound</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+                <span class="n">prime_array</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">upper_bound</span><span class="p">)</span> <span class="k">if</span> <span class="n">prime_array</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span></div>
+
+
+<div class="viewcode-block" id="write_primes_to_db"><a class="viewcode-back" href="../prime_find.html#prime_find.write_primes_to_db">[docs]</a><span class="k">def</span> <span class="nf">write_primes_to_db</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Writes the input list to the DB</span>
+<span class="sd">        In this case takes a list and writes each item to the \</span>
+<span class="sd">        column prime_number in the table primes, \</span>
+<span class="sd">        in the database primes.db.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        n (list): A list of inputs to be written to a database</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">DatabaseConnection</span><span class="p">(</span><span class="s1">&#39;primes.db&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">connection</span><span class="p">:</span>
+        <span class="n">cursor</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">n</span><span class="p">:</span>
+            <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;INSERT OR REPLACE INTO primes (prime_number) VALUES (</span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="return_primes"><a class="viewcode-back" href="../prime_find.html#prime_find.return_primes">[docs]</a><span class="k">def</span> <span class="nf">return_primes</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Reads from the DB and returns all the primes</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: Returns a list of all the columns \</span>
+<span class="sd">        found within the table primes, within the database primes.db</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">create_primes_table</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">DatabaseConnection</span><span class="p">(</span><span class="s1">&#39;primes.db&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">connection</span><span class="p">:</span>
+        <span class="n">cursor</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;SELECT * FROM primes&#39;</span><span class="p">)</span>
+        <span class="n">primes</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()]</span>
+        <span class="k">return</span><span class="p">(</span><span class="n">primes</span><span class="p">)</span></div>
+
+
+<span class="c1"># Initialising menu for finding the primes</span>
+<div class="viewcode-block" id="find_primes_workflow"><a class="viewcode-back" href="../prime_find.html#prime_find.find_primes_workflow">[docs]</a><span class="k">def</span> <span class="nf">find_primes_workflow</span><span class="p">(</span><span class="n">upper_bound</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; The main workflow function for the prime number searching functionality.</span>
+<span class="sd">        This can function can be called directly for automated workflows,</span>
+<span class="sd">        or this function will be called from the App Menu found in app.py.</span>
+
+<span class="sd">        This function works in several stage:</span>
+<span class="sd">            1. Established an upper_bound for the array, \</span>
+<span class="sd">            either through user input or passed argumennts</span>
+<span class="sd">            2. Creates the database if required</span>
+<span class="sd">            3. Finds all the primes up to the upper_bound, \</span>
+<span class="sd">            while timing the function</span>
+<span class="sd">            4. writes the found primes to the database</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        upper_bound (int, optional): This intiger can be provided by calling \</span>
+<span class="sd">        this function directly, or from inputs. Defaults to None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">upper_bound</span><span class="p">:</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">upper_bound</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
+                    <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Input an integer for upper bound 3 or above: &quot;</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">upper_bound</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please make the value above 2&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="k">break</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;That is not a valid intiger.&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+    <span class="c1"># Creates db if needed</span>
+    <span class="n">create_primes_table</span><span class="p">()</span>
+
+    <span class="c1"># Find the primes with a timer wrapper</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+    <span class="n">write</span> <span class="o">=</span> <span class="n">prime_finder</span><span class="p">(</span><span class="n">upper_bound</span><span class="p">)</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;To find primes up to </span><span class="si">{</span><span class="n">upper_bound</span><span class="si">}</span><span class="s2"> it took </span><span class="si">{</span><span class="n">end</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="si">}</span><span class="s2"> Seconds&quot;</span><span class="p">)</span>
+
+    <span class="c1"># write the primes to a database with a timer wrapper</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+    <span class="n">write_primes_to_db</span><span class="p">(</span><span class="n">write</span><span class="p">)</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;To write it took </span><span class="si">{</span><span class="n">end</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="si">}</span><span class="s2"> Seconds&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Timothy Noble.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
